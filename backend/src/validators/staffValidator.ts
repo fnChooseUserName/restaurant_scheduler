@@ -6,3 +6,5 @@ export const createStaffSchema = z.object({
   phone: z.string().optional(),
   email: z.string().email()
 });
+
+export const updateStaffSchema = createStaffSchema.partial();
