@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
 
@@ -12,7 +13,8 @@ type ErrorResponse = {
 /**
  * Terminal middleware: maps errors to HTTP responses. Order matters—check specific types
  * before the generic `Error` branch so validation (`ZodError`) and intentional HTTP errors
- * (`AppError`) are not misreported as 500s.
+ * (`AppError`) are not misreported as 500s. Prisma unique violations (`P2002`) return 409
+ * with a short client-safe message instead of a generic 500.
  */
 export const errorHandler = (
   error: unknown,
@@ -35,6 +37,20 @@ export const errorHandler = (
       message: error.message
     });
     return;
+  }
+
+  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    if (error.code === "P2002") {
+      const target = error.meta?.target;
+      const fields = Array.isArray(target) ? target.join(", ") : String(target ?? "");
+      res.status(409).json({
+        success: false,
+        message: fields
+          ? `A record already exists for: ${fields}`
+          : "A record with this value already exists"
+      });
+      return;
+    }
   }
 
   if (error instanceof Error) {
