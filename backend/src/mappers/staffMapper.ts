@@ -1,3 +1,5 @@
+import type { StaffMember } from "@prisma/client";
+
 export type StaffDto = {
   id: number;
   name: string;
@@ -6,7 +8,7 @@ export type StaffDto = {
   phone?: string | null;
 };
 
-export const toStaffDto = (staff: StaffDto): StaffDto => ({
+export const toStaffDto = (staff: StaffMember): StaffDto => ({
   id: staff.id,
   name: staff.name,
   role: staff.role,
