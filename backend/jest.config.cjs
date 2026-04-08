@@ -2,6 +2,8 @@
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
+  // Integration tests share one database; parallel files would race on deleteMany / fixtures.
+  maxWorkers: 1,
   roots: ["<rootDir>/src/__tests__"],
   setupFilesAfterEnv: ["<rootDir>/src/__tests__/setup.ts"],
   testMatch: [
