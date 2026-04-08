@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:17
+    container_name: restaurant-scheduler-db
+    environment:
+      POSTGRES_DB: restaurant_scheduler
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    ports:
+      - "5432:5432"
+    networks:
+      - restaurant-scheduler-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:password@db:5432/restaurant_scheduler}
+      PORT: ${PORT:-3000}
+      NODE_ENV: ${NODE_ENV:-production}
+    volumes:
+      - ./backend/.env:/app/.env
+    ports:
+      - "3000:3000"
+    networks:
+      - restaurant-scheduler-network
+
+networks:
+  restaurant-scheduler-network:
+    driver: bridge

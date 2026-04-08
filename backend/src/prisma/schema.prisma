@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum StaffRole {
+  SERVER
+  COOK
+  MANAGER
+  HOST
+  BARTENDER
+}
+
+model StaffMember {
+  id               Int               @id @default(autoincrement())
+  name             String
+  role             StaffRole
+  phone            String?
+  email            String            @unique
+  shiftAssignments ShiftAssignment[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model Shift {
+  id               Int               @id @default(autoincrement())
+  day              DateTime
+  startTime        String
+  endTime          String
+  role             StaffRole
+  shiftAssignments ShiftAssignment[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model ShiftAssignment {
+  id            Int         @id @default(autoincrement())
+  staffMemberId Int
+  shiftId       Int
+  staffMember   StaffMember @relation(fields: [staffMemberId], references: [id], onDelete: Cascade)
+  shift         Shift       @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
