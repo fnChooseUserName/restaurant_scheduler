@@ -16,7 +16,7 @@ From the **repository root** (same directory as `docker-compose.yml`):
       - `cp .env.example .env` for Unix/Mac  
       - Defaults match `docker-compose.yml` (`postgres` / `password`, DB `restaurant_scheduler`). _Override only if you must avoid port or credential clashes._
    - Copy the backend template for the mounted env file (required for the backend service volume):  
-     - `copy backend/.env.example backend/.env` for Windows
+     - `copy "backend/.env.example" "backend/.env"` for Windows
      - `cp backend/.env.example backend/.env` for Unix/Mac  
      - Open `backend/.env` and set **`DATABASE_URL`** so the API can reach Postgres **from inside Docker**. The Compose file names the database service **`db`**, so use **`db`** as the hostname (not `localhost`, which would point at the API container itself). Example:  
        `DATABASE_URL=postgresql://postgres:password@db:5432/restaurant_scheduler`  
@@ -29,17 +29,18 @@ From the **repository root** (same directory as `docker-compose.yml`):
    - API: [http://localhost:3000](http://localhost:3000)  
    - Postgres is exposed on **localhost:5432** (see `docker-compose.yml`).
 
-3. **Database migrations**  
+3. **Database migrations**  (OPTIONAL)  
    The backend container **applies migrations automatically on startup** (`prisma migrate deploy` in the image entrypoint before `node dist/server.js`). You do not need a separate migrate step for a normal first run.  
-   If you ever need to run migrations manually inside the running backend container:
+   If for any reason you need to run migrations manually inside the running backend container:
    ```bash
    docker compose exec backend npx prisma migrate deploy --schema src/prisma/schema.prisma
    ```
 
-4. **Seed sample data** (staff + shifts) :  run once after the stack is up:
+4. **Seed sample data (staff + shifts)**  (OPTIONAL):  run once after the stack is up:
    ```bash
    docker compose exec backend npm run prisma:seed
    ```
+   - Seeding is an optional step. Creation of all resources is possible from a blank start.
 
 5. **Frontend (host machine)** :  the SPA is not containerized in this MVP; run it against the API on port 3000:
    ```bash
@@ -50,7 +51,12 @@ From the **repository root** (same directory as `docker-compose.yml`):
    Open the URL Vite prints (usually [http://localhost:5173](http://localhost:5173)).  
    The client defaults to `http://localhost:3000/api`; override with **`VITE_API_BASE_URL`** if needed (see `frontend/.env.example`).
 
-**Smoke check:** With the API up, `GET http://localhost:3000/api/staff` should return JSON (an empty array before seeding, or seeded staff after `prisma:seed`).
+**Happy Path usage:**  
+- With the API up, you should be able to navigate to the root URL which displays the Staff Listing page. If no data is created/seeded yet, the table will be blank.  
+- From this page, you can click the 'Add staff member' button to _(you guessed it)_ Add a Staff Member!  
+- Once you have filled out and saved the modal form, you can navigate to the Shift Listing page (top right). Like the Staff Listing page, this is blank unless seeded. But once again you can Create Shift with the respective button, and save.    
+- _It's worth noting here that the 'Required Role' of the shift must match one of the Roles of an existing Staff member in order to be assignable._  
+- Still on the Shift Listing page, you can click 'View' to enter the Shift Details page. This outlines the the full data associated with the shift (for now, minimal) and gives you the option to Assign a Staff Member to that shift. 
 
 ---
 
