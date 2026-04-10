@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import { AppLayout } from './pages/AppLayout'
-import { DevCrudTestPage } from './pages/DevCrudTestPage'
 import { ShiftDetailPage } from './pages/ShiftDetailPage'
 import { ShiftsListPage } from './pages/ShiftsListPage'
 import { StaffListPage } from './pages/StaffListPage'
@@ -19,7 +18,6 @@ function App() {
             <Route path="/shifts" element={<ShiftsListPage />} />
             <Route path="/shifts/:id" element={<ShiftDetailPage />} />
           </Route>
-          <Route path="/dev" element={<DevCrudTestPage />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
