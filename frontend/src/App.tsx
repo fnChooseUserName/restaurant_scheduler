@@ -3,8 +3,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import { AppLayout } from './pages/AppLayout'
 import { DevCrudTestPage } from './pages/DevCrudTestPage'
-import { ShiftDetailPagePlaceholder } from './pages/ShiftDetailPagePlaceholder'
-import { ShiftsListPagePlaceholder } from './pages/ShiftsListPagePlaceholder'
+import { ShiftDetailPage } from './pages/ShiftDetailPage'
+import { ShiftsListPage } from './pages/ShiftsListPage'
 import { StaffListPage } from './pages/StaffListPage'
 
 const queryClient = new QueryClient()
@@ -16,14 +16,8 @@ function App() {
         <Routes>
           <Route element={<AppLayout />}>
             <Route path="/" element={<StaffListPage />} />
-            <Route
-              path="/shifts"
-              element={<ShiftsListPagePlaceholder />}
-            />
-            <Route
-              path="/shifts/:id"
-              element={<ShiftDetailPagePlaceholder />}
-            />
+            <Route path="/shifts" element={<ShiftsListPage />} />
+            <Route path="/shifts/:id" element={<ShiftDetailPage />} />
           </Route>
           <Route path="/dev" element={<DevCrudTestPage />} />
         </Routes>
